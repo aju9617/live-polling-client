@@ -21,14 +21,7 @@ function Dashboard() {
   };
 
   const updatePollResult = (options) => {
-    let totalVotes = options.reduce((acc, e) => e.poll + acc, 0);
-    console.log({ totalVotes });
-    let updatedPollPercentages = options.map((each) => {
-      each.pollPercentage =
-        totalVotes > 0 ? Math.ceil((each.poll / totalVotes) * 100) : 0;
-      return each;
-    });
-    setQuestion((e) => ({ ...e, options: updatedPollPercentages }));
+    setQuestion((e) => ({ ...e, options }));
   };
 
   useEffect(() => {
@@ -111,7 +104,10 @@ function RegisterStudent() {
     if (userName) {
       sessionStorage.setItem("name", userName);
       sessionStorage.setItem("type", "student");
-      socketContext?.socket?.emit("new-student-joined", userName);
+      socketContext?.socket?.emit("new-student-joined", {
+        userName,
+        userId: socketContext.socketId,
+      });
       setRefreshKey((e) => e + 1);
     }
   };

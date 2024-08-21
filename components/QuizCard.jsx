@@ -8,16 +8,24 @@ function QuizCard({
   isCtaDisabled = false,
   onSubmit,
   updatePollResult,
+  showCta = true,
 }) {
   const [selectedOption, setSelectedOption] = useState(null);
   const socketContext = useSocketContext();
+  let totalVotes = question?.options?.reduce((acc, e) => acc + e.poll, 0);
 
   useEffect(() => {
-    socketContext?.socket?.on("poll-result", (data) => {
-      console.log(data);
-      updatePollResult(data.options);
-    });
-  }, [socketContext?.socket]);
+    let func = (data) => {
+      if (data.questionId === question.id && updatePollResult) {
+        updatePollResult(data.options);
+      }
+    };
+    socketContext?.socket?.on("poll-result", func);
+
+    return () => {
+      socketContext?.socket?.off("poll-result", func);
+    };
+  }, [socketContext?.socket, question, updatePollResult]);
 
   useEffect(() => {
     setSelectedOption(null);
@@ -25,7 +33,10 @@ function QuizCard({
 
   return (
     <div>
-      <h2 className="mb-4 text-lg font-bold">{question?.title}</h2>
+      <h2 className="mb-4  flex justify-between">
+        <span className="text-lg font-bold">{question?.title}</span>{" "}
+        <span>{totalVotes} students voted</span>
+      </h2>
       <div>
         {question?.options.map((each, ind) => {
           return (
@@ -61,7 +72,7 @@ function QuizCard({
                 </div>
                 {showPollResult && (
                   <span className="font-bold text-sm ">
-                    {each.pollPercentage} %
+                    {each.pollPercentage ?? 0} %
                   </span>
                 )}
               </label>
@@ -69,13 +80,15 @@ function QuizCard({
           );
         })}
       </div>
-      <button
-        disabled={isCtaDisabled}
-        onClick={() => onSubmit(selectedOption)}
-        className="text-white bg-gray-800 p-4 py-2 w-max "
-      >
-        {ctaText}
-      </button>
+      {showCta && (
+        <button
+          disabled={isCtaDisabled}
+          onClick={() => onSubmit(selectedOption)}
+          className="text-white bg-gray-800 p-4 py-2 w-max "
+        >
+          {ctaText}
+        </button>
+      )}
     </div>
   );
 }

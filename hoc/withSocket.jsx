@@ -26,6 +26,10 @@ function withSocket(Children) {
     socket.auth = { userId };
     socket.connect();
 
+    socket.emit("new-student-joined", {
+      userName: sessionStorage.getItem("name"),
+      userId,
+    });
     socket.on("message", ({ message, media }) => {
       setMessages((e) => [
         ...e,
