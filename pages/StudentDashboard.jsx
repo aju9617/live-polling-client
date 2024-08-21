@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Layout from "../components/Layout";
 import { useSocketContext } from "../context/socketContext";
 import QuizCard from "../components/QuizCard";
@@ -8,16 +8,16 @@ function Dashboard() {
   const [showPollResult, setShowPollResult] = useState(false);
   const [question, setQuestion] = useState(null);
   const [timer, setTimer] = useState(0);
-  let timerRef = null;
+  let timerRef = useRef(null);
 
+  let questionId = question?.id ?? "";
   const handleSubmitAnswer = (selectedOption) => {
     socketContext?.socket?.emit("answer-submitted", {
       answerId: selectedOption,
       questionId: question.id,
     });
-    setTimer(0);
     setShowPollResult(true);
-    clearInterval(timerRef);
+    clearInterval(timerRef.current);
   };
 
   const updatePollResult = (options) => {
@@ -34,11 +34,11 @@ function Dashboard() {
 
   useEffect(() => {
     if (question) {
-      timerRef = setInterval(() => {
+      timerRef.current = setInterval(() => {
         setTimer((e) => {
           if (e >= question.duration) {
             setShowPollResult(true);
-            clearInterval(timerRef);
+            clearInterval(timerRef.current);
             return e;
           } else {
             return e + 1;
@@ -48,9 +48,11 @@ function Dashboard() {
     }
 
     return function () {
-      clearInterval(timerRef);
+      clearInterval(timerRef.current);
     };
-  }, [question]);
+  }, [questionId]);
+
+  useEffect(() => {}, []);
 
   if (!question) {
     return (
@@ -84,6 +86,7 @@ function Dashboard() {
         onSubmit={handleSubmitAnswer}
         showPollResult={showPollResult}
         updatePollResult={updatePollResult}
+        isCtaDisabled={showPollResult}
       />
     </Layout>
   );

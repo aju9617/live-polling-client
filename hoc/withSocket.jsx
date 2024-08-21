@@ -1,12 +1,14 @@
 import React, { useContext, useEffect, useState } from "react";
 import socketio from "socket.io-client";
+import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { useSocketContext } from "../context/socketContext";
+import toast from "react-hot-toast";
 let userId = sessionStorage.getItem("userId");
 
 function withSocket(Children) {
   const socketContext = useSocketContext();
-
+  const navigate = useNavigate();
   if (!userId) {
     userId = uuidv4();
     sessionStorage.setItem("userId", userId);
@@ -53,6 +55,8 @@ function withSocket(Children) {
     });
 
     socket.on("disconnect", () => {
+      toast.error("you have been kicked off by your teacher :(");
+      navigate("/");
       console.log("disconnected");
     });
 

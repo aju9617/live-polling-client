@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Layout from "../components/Layout";
 import toast from "react-hot-toast";
 import { Formik, Form, Field, FieldArray } from "formik";
@@ -12,6 +12,10 @@ function TeacherDashboard() {
   const [showPollResult, setShowPollResult] = useState(false);
   const [question, setQuestion] = useState(null);
   const [questionList, setQuestionList] = useState([]);
+  const [counter, setCounter] = useState(10);
+  const [isAddQuestionCtaDisabled, setIsAddQuestionCtaDisabled] =
+    useState(false);
+  const timerRef = useRef(null);
 
   const handleSubmitQuestion = (values) => {
     let currentQuestion = {
@@ -41,11 +45,26 @@ function TeacherDashboard() {
       toast.error("please add atleast 2 options");
       return;
     }
+
+    timerRef.current = setInterval(() => {
+      setCounter((e) => {
+        if (e >= currentQuestion.duration) {
+          setCounter(0);
+          setIsAddQuestionCtaDisabled(false);
+          clearInterval(timerRef.current);
+          return e;
+        } else {
+          return e + 1;
+        }
+      });
+    }, 1000);
+
     socketContext.socket.emit(
       "new-question-published",
       currentQuestion,
       socketContext.socketId
     );
+    setIsAddQuestionCtaDisabled(true);
     setQuestion(currentQuestion);
     setShowPollResult(true);
   };
@@ -56,7 +75,6 @@ function TeacherDashboard() {
 
   useEffect(() => {
     socketContext?.socket?.on("load-questions", (data) => {
-      console.log(data);
       setQuestionList(data);
     });
   }, [socketContext?.socket]);
@@ -72,13 +90,31 @@ function TeacherDashboard() {
       }
     >
       <div className="min-h-[60vh]">
+        {showPollResult && (
+          <div
+            className={`relative p-2 text-xs text-center bg-gray-100 ${
+              counter == 0 ? "hidden" : ""
+            }`}
+          >
+            {`${question.duration - counter} sec left`}
+            <div
+              className="absolute opacity-30  h-full left-0 top-0 bottom-0 bg-green-400"
+              style={{ width: `${(counter / question.duration) * 100}%` }}
+            ></div>
+          </div>
+        )}
         {showPollResult ? (
           <QuizCard
             question={question}
             showPollResult={showPollResult}
-            ctaText="Ask another question"
+            ctaText={
+              isAddQuestionCtaDisabled
+                ? "Waiting for students to submit"
+                : "Ask another question"
+            }
             updatePollResult={updatePollResult}
             onSubmit={() => setShowPollResult(false)}
+            isCtaDisabled={isAddQuestionCtaDisabled}
           />
         ) : (
           <div className="mb-4">
@@ -125,6 +161,7 @@ function TeacherDashboard() {
                             key={index}
                             className="mb-4 flex items-center space-x-4"
                           >
+                            <p className="text-sm">{index + 1}.</p>
                             <Field
                               name={`options[${index}].text`}
                               placeholder="Enter option"
@@ -156,13 +193,15 @@ function TeacherDashboard() {
                             </button>
                           </div>
                         ))}
-                        <button
-                          type="button"
-                          onClick={() => push({ text: "", isCorrect: false })}
-                          className="text-xs px-2 py-1 bg-yellow-600 text-white mr-4"
-                        >
-                          Add another option +
-                        </button>
+                        {values.options.length < 6 && (
+                          <button
+                            type="button"
+                            onClick={() => push({ text: "", isCorrect: false })}
+                            className="text-xs px-2 py-1 bg-yellow-600 text-white mr-4"
+                          >
+                            Add another option +
+                          </button>
+                        )}
                       </div>
                     )}
                   </FieldArray>
