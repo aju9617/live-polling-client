@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Layout from "../components/Layout";
 import { useSocketContext } from "../context/socketContext";
 import QuizCard from "../components/QuizCard";
+import Discuss from "../components/Discuss";
 
 function Dashboard() {
   const socketContext = useSocketContext();
@@ -54,40 +55,41 @@ function Dashboard() {
 
   useEffect(() => {}, []);
 
-  if (!question) {
-    return (
-      <Layout>
-        <div className="min-h-[60vh] grid place-content-center">
-          <p className="text-center  ">
-            waiting for teacher to ask question...
-          </p>
-        </div>
-      </Layout>
-    );
-  }
-
   return (
     <Layout
       showTitle={true}
-      title="Select correct option and submit"
+      title="Snap Quiz"
       rightSection={
-        <div className="h-[80px] w-[80px] rounded-full text-xs flex justify-center items-center flex-col text-center   bg-blue-200">
-          <span className="font-bold mb-0 ">
-            {" "}
-            {timer} / {question.duration}
-          </span>
-          seconds remaining
-        </div>
+        question ? (
+          <div className="h-[80px] w-[80px] rounded-full text-xs flex justify-center items-center flex-col text-center   bg-blue-200">
+            <span className="font-bold mb-0 ">
+              {" "}
+              {timer} / {question.duration}
+            </span>
+            seconds remaining
+          </div>
+        ) : (
+          <></>
+        )
       }
     >
-      <QuizCard
-        question={question}
-        ctaText={showPollResult ? "waiting for new answers" : "submit"}
-        onSubmit={handleSubmitAnswer}
-        showPollResult={showPollResult}
-        updatePollResult={updatePollResult}
-        isCtaDisabled={showPollResult}
-      />
+      <div className="relative min-h-[60vh]">
+        <Discuss />
+        {question ? (
+          <QuizCard
+            question={question}
+            ctaText={showPollResult ? "waiting for new answers" : "submit"}
+            onSubmit={handleSubmitAnswer}
+            showPollResult={showPollResult}
+            updatePollResult={updatePollResult}
+            isCtaDisabled={showPollResult}
+          />
+        ) : (
+          <p className="text-center  ">
+            waiting for teacher to ask question...
+          </p>
+        )}
+      </div>
     </Layout>
   );
 }

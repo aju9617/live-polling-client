@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useSocketContext } from "../context/socketContext";
 import moment from "moment";
+import { useNavigate } from "react-router-dom";
 
 function StudentsList() {
   const [studentList, setStudentList] = useState([]);
   const socketContext = useSocketContext();
+  const navigate = useNavigate();
 
   const kickOutStudent = (id) => {
     socketContext?.socket.emit("kick-out", id);
@@ -14,8 +16,9 @@ function StudentsList() {
     let func = (data) => {
       setStudentList(data);
     };
-    socketContext?.socket?.on("load-students", func);
 
+    socketContext?.socket?.on("load-students", func);
+    socketContext?.socket?.emit("load-students", socketContext.socketId);
     return () => {
       socketContext?.socket?.off("load-students", func);
     };
@@ -37,7 +40,13 @@ function StudentsList() {
           <p className="text-sm font-semibold">{each.userName}</p>
           <p className="text-xs">joined {moment(each.joinedAt).fromNow()}</p>
           <button
-            className="bg-red-500 text-white text-xs p-2 px-3 mt-2"
+            className="bg-red-500 text-white text-xs p-2 px-3 mt-2 mr-2 cursor-pointer"
+            onClick={() => navigate(`/chat/${each.userId}`)}
+          >
+            chat
+          </button>
+          <button
+            className="bg-red-500 text-white text-xs p-2 px-3 mt-2 cursor-pointer"
             onClick={() => kickOutStudent(each.userId)}
           >
             kick out

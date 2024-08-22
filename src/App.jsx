@@ -1,20 +1,15 @@
-import toast, { Toaster } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 import socketio from "socket.io-client";
 import { v4 as uuidv4 } from "uuid";
 import { useEffect } from "react";
-import {
-  createBrowserRouter,
-  Route,
-  RouterProvider,
-  Routes,
-  useNavigate,
-} from "react-router-dom";
-import withSocket from "../hoc/withSocket";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import StudentDashboard from "../pages/StudentDashboard";
 import TeacherDashboard from "../pages/TeacherDashboard";
 import Home from "../pages/Home";
 import { useSocketContext } from "../context/socketContext";
+import { useChatContext } from "../context/chatContext";
 import KickOut from "../pages/KickOut";
+
 let userId = sessionStorage.getItem("userId");
 
 function App() {
@@ -33,6 +28,7 @@ function App() {
 
 const AppWithSocket = () => {
   const socketContext = useSocketContext();
+  const chatContext = useChatContext();
   const navigate = useNavigate();
 
   if (!userId) {
@@ -58,32 +54,10 @@ const AppWithSocket = () => {
       userName: sessionStorage.getItem("name"),
       userId,
     });
-    socket.on("message", ({ message, media }) => {
-      setMessages((e) => [
-        ...e,
-        {
-          type: "RECEIVED",
-          photo: user.profile,
-          createdAt: new Date(),
-          message: message,
-          media: media,
-          name: user.username,
-        },
-      ]);
-    });
 
-    socket.on("typing-start", () => {
-      setTypingAcknowledge(true);
-    });
-
-    socket.on("typing-end", () => {
-      setTypingAcknowledge(false);
-    });
-
-    socket.on("disconnect", () => {
-      toast.error("you have been kicked off by your teacher :(");
+    socket.on("disconnect", (e) => {
       navigate("/kick-out");
-      console.log("disconnected");
+      console.log("disconnected", e);
     });
 
     socket.on("connect_error", (err) => {

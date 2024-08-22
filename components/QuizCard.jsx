@@ -84,7 +84,11 @@ function QuizCard({
         <button
           disabled={isCtaDisabled}
           onClick={() => onSubmit(selectedOption)}
-          className="text-white bg-gray-800 p-4 py-2 w-max "
+          className={` p-4 py-2 w-max ${
+            isCtaDisabled
+              ? "bg-gray-200 text-gray-600"
+              : "bg-gray-800 text-white"
+          }`}
         >
           {ctaText}
         </button>

@@ -6,6 +6,7 @@ import { useSocketContext } from "../context/socketContext";
 import QuizCard from "../components/QuizCard";
 import { v4 as uuidv4 } from "uuid";
 import StudentsList from "../components/StudentsList";
+import Discuss from "../components/Discuss";
 
 function TeacherDashboard() {
   const socketContext = useSocketContext();
@@ -80,16 +81,9 @@ function TeacherDashboard() {
   }, [socketContext?.socket]);
 
   return (
-    <Layout
-      title="Ask Question and Options"
-      showTitle
-      rightSection={
-        <>
-          <p>Hello {sessionStorage.getItem("name")}</p>
-        </>
-      }
-    >
-      <div className="min-h-[60vh]">
+    <Layout title="Snap Quiz" showTitle rightSection={<></>}>
+      <div className="min-h-[60vh] relative">
+        <Discuss />
         {showPollResult && (
           <div
             className={`relative p-2 text-xs text-center bg-gray-100 ${
@@ -118,10 +112,10 @@ function TeacherDashboard() {
           />
         ) : (
           <div className="mb-4">
-            <p className="font-bold">Form</p>
+            <p className="font-bold">Quiz Form</p>
             <Formik
               initialValues={{
-                duration: 60,
+                duration: 30,
                 question: "",
                 options: [{ text: "", isCorrect: false }],
               }}
