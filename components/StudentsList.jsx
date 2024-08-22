@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 function StudentsList() {
   const [studentList, setStudentList] = useState([]);
   const socketContext = useSocketContext();
-  const navigate = useNavigate();
 
   const kickOutStudent = (id) => {
     socketContext?.socket.emit("kick-out", id);
@@ -39,12 +38,7 @@ function StudentsList() {
         >
           <p className="text-sm font-semibold">{each.userName}</p>
           <p className="text-xs">joined {moment(each.joinedAt).fromNow()}</p>
-          <button
-            className="bg-red-500 text-white text-xs p-2 px-3 mt-2 mr-2 cursor-pointer"
-            onClick={() => navigate(`/chat/${each.userId}`)}
-          >
-            chat
-          </button>
+
           <button
             className="bg-red-500 text-white text-xs p-2 px-3 mt-2 cursor-pointer"
             onClick={() => kickOutStudent(each.userId)}
