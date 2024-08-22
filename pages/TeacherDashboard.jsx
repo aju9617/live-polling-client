@@ -82,7 +82,7 @@ function TeacherDashboard() {
 
   return (
     <Layout title="Snap Quiz" showTitle rightSection={<></>}>
-      <div className="min-h-[60vh] ">
+      <div className="min-h-[90vh] ">
         <Discuss />
         {showPollResult && (
           <div

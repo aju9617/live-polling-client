@@ -108,7 +108,7 @@ function Discuss() {
           newMessageCount
             ? "bg-red-200 border-red-500"
             : "bg-white border-gray-300"
-        } z-10 cursor-pointer  fixed right-[14.6rem] bottom-10 border  p-4 py-2  shadow-md text-sm  `}
+        } z-10 cursor-pointer  fixed right-5 bottom-10 border  p-4 py-2  shadow-md text-sm  `}
       >
         📬 {newMessageCount} new messages
       </div>
@@ -116,7 +116,7 @@ function Discuss() {
   }
 
   return (
-    <div className="z-10 fixed right-[14.6rem] bottom-10 border border-gray-300 w-96 p-3 flex flex-col shadow-md h-[400px] bg-white">
+    <div className="z-10 fixed right-5 bottom-10 border border-gray-300 w-96 p-3 flex flex-col shadow-md h-[400px] bg-white">
       <div className="flex items-center justify-between mb-2">
         <span className="text-sm font-semibold ">Discuss</span>
         <span onClick={toggleFullViewMode} className="cursor-pointer ">
