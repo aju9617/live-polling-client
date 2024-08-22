@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSocketContext } from "../context/socketContext";
 import moment from "moment";
-import { useNavigate } from "react-router-dom";
 
 function StudentsList() {
   const [studentList, setStudentList] = useState([]);

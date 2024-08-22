@@ -9,10 +9,19 @@ function Discuss() {
   const [fullViewMode, setFullViewMode] = useState(false);
   const socketContext = useSocketContext();
   const chatContext = useChatContext();
-
+  const endOfMessagesRef = useRef(null);
   const [text, setText] = useState("");
   const [messages, setMessages] = useState([]);
   const [newMessageCount, setNewMessageCount] = useState(0);
+  const [shake, setShake] = useState(false);
+
+  useEffect(() => {
+    if (newMessageCount > 0) {
+      setShake(true);
+      const timer = setTimeout(() => setShake(false), 500); // Reset shake after animation
+      return () => clearTimeout(timer);
+    }
+  }, [newMessageCount]);
 
   const handleMessageInput = (event) => {
     if (event.key === "Enter") {
@@ -44,7 +53,17 @@ function Discuss() {
     setFullViewMode((e) => !e);
   };
 
-  const endOfMessagesRef = useRef(null);
+  useEffect(() => {
+    const handleEsc = (event) => {
+      if (event.key === "Escape") {
+        setFullViewMode(false);
+      }
+    };
+    document.addEventListener("keydown", handleEsc);
+    return () => {
+      document.removeEventListener("keydown", handleEsc);
+    };
+  }, []);
 
   useEffect(() => {
     if (endOfMessagesRef.current)
@@ -85,7 +104,11 @@ function Discuss() {
     return (
       <div
         onClick={toggleFullViewMode}
-        className="z-10 cursor-pointer  absolute right-0 bottom-0 border border-gray-300 p-4 py-2  shadow-md text-sm  bg-white"
+        className={`${shake ? "shake" : ""} ${
+          newMessageCount
+            ? "bg-red-200 border-red-500"
+            : "bg-white border-gray-300"
+        } z-10 cursor-pointer  fixed right-[14.6rem] bottom-10 border  p-4 py-2  shadow-md text-sm  `}
       >
         📬 {newMessageCount} new messages
       </div>
@@ -93,7 +116,7 @@ function Discuss() {
   }
 
   return (
-    <div className="z-10 absolute right-0 bottom-0 border border-gray-300 w-96 p-3 flex flex-col shadow-md h-[400px] bg-white">
+    <div className="z-10 fixed right-[14.6rem] bottom-10 border border-gray-300 w-96 p-3 flex flex-col shadow-md h-[400px] bg-white">
       <div className="flex items-center justify-between mb-2">
         <span className="text-sm font-semibold ">Discuss</span>
         <span onClick={toggleFullViewMode} className="cursor-pointer ">
@@ -108,7 +131,9 @@ function Discuss() {
           if (each.type === "SENT") {
             return (
               <div key={ind} className="mb-2 w-90 ml-auto">
-                <p className="text-sm text-right">{each.text}</p>
+                <p className="text-sm text-right ">
+                  <span className="">{each.text}</span>
+                </p>
                 <p className="text-xs text-gray-500 text-right">
                   {moment(each.created).fromNow()}{" "}
                 </p>

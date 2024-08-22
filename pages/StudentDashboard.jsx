@@ -73,7 +73,7 @@ function Dashboard() {
         )
       }
     >
-      <div className="relative min-h-[60vh]">
+      <div className="relative min-h-[90vh]">
         <Discuss />
         {question ? (
           <QuizCard
