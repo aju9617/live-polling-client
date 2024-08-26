@@ -8,14 +8,14 @@ function Layout({ title, showTitle = false, rightSection, children }) {
   return (
     <div className="max-w-[1440px] mx-auto ">
       {showTitle && (
-        <div className="flex justify-between items-center border border-gray-700 p-4 py-2">
+        <div className="flex justify-between items-center  p-4 py-2">
           <p className="text-lg  ">
             {title} <br />
           </p>
           {rightSection}
         </div>
       )}
-      <div className="border border-gray-700 p-4 py-2">{children}</div>
+      <div className="p-4 py-2">{children}</div>
     </div>
   );
 }

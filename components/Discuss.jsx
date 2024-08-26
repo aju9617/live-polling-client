@@ -104,19 +104,20 @@ function Discuss() {
     return (
       <div
         onClick={toggleFullViewMode}
-        className={`${shake ? "shake" : ""} ${
-          newMessageCount
-            ? "bg-red-200 border-red-500"
-            : "bg-white border-gray-300"
-        } z-10 cursor-pointer  fixed right-5 bottom-10 border  p-4 py-2  shadow-md text-sm  `}
+        className={`${shake ? "shake" : ""} bg-white ${
+          newMessageCount ? " border border-red-500" : " border border-gray-200"
+        } z-10 cursor-pointer  fixed right-5 bottom-10 w-10 h-10 rounded-full shadow-md text-xl grid place-content-center `}
       >
-        📬 {newMessageCount} new messages
+        <span className="bg-red-500 shadow-md absolute -top-2 -right-1 rounded-full  w-6 h-6 text-xs grid place-content-center text-white text-center">
+          {newMessageCount}
+        </span>
+        📩
       </div>
     );
   }
 
   return (
-    <div className="z-10 fixed right-5 bottom-10 border border-gray-300 w-96 p-3 flex flex-col shadow-md h-[400px] bg-white">
+    <div className="rounded z-10 fixed right-5 bottom-10 border border-gray-300 w-96 p-3 flex flex-col shadow-md h-[400px] bg-white">
       <div className="flex items-center justify-between mb-2">
         <span className="text-sm font-semibold ">Discuss</span>
         <span onClick={toggleFullViewMode} className="cursor-pointer ">
@@ -130,10 +131,8 @@ function Discuss() {
         {messages.map((each, ind) => {
           if (each.type === "SENT") {
             return (
-              <div key={ind} className="mb-2 w-90 ml-auto">
-                <p className="text-sm text-right ">
-                  <span className="">{each.text}</span>
-                </p>
+              <div key={ind} className="mb-2 w-90 ml-auto ">
+                <p className="text-sm text-right break-words ">{each.text}</p>
                 <p className="text-xs text-gray-500 text-right">
                   {moment(each.created).fromNow()}{" "}
                 </p>
@@ -141,8 +140,8 @@ function Discuss() {
             );
           } else {
             return (
-              <div key={ind} className="mb-2">
-                <p className="text-sm">{each.text}</p>
+              <div key={ind} className=" mb-2  break-words ">
+                <p className="text-sm max-w-[80%] break-normal">{each.text}</p>
                 <p className="text-xs text-gray-500">
                   {each.name} ⊚ {moment(each.created).fromNow()}
                 </p>
@@ -155,7 +154,7 @@ function Discuss() {
         <input
           autoFocus
           type="text"
-          className="flex-grow border border-gray-400 p-4 py-2 mr-2 text-sm focus:ring-0"
+          className="rounded flex-grow border border-gray-400 p-4 py-2 mr-2 text-sm focus:ring-0"
           placeholder="enter message"
           onKeyDown={(e) => handleMessageInput(e)}
           onChange={(e) => setText(e.target.value)}
@@ -163,7 +162,7 @@ function Discuss() {
         />{" "}
         <button
           onClick={(e) => handleSendMessage(text)}
-          className="p-4 py-2 bg-gray-600 text-white"
+          className="rounded p-4 py-2 bg-gray-600 text-white"
         >
           send
         </button>

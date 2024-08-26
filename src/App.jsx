@@ -37,7 +37,6 @@ const AppWithSocket = () => {
   }
 
   useEffect(() => {
-    console.log("initializing socket connection");
     const Endpoint = import.meta.env.VITE_API_URL;
 
     let socket = socketio(Endpoint, {
